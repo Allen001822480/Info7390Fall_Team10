@@ -1,0 +1,3 @@
+,Quarter,No_of_actual_delq,No_of_pred_delq,No_of_records,No_of_delq_properly_classified,No_of_nonDelq_improperly_classified_as_delq
+0,Q12005,8500.0,3761.0,200000.0,741.0,3020.0
+0,Q12005,8500.0,3761.0,200000.0,741.0,3020.0
