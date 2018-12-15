@@ -7,9 +7,9 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from datetime import date
 import holidays
-import pickle
+import cloudpickle
 sns.set(style="ticks", color_codes=True)
-#api = getpass.getpass()
+# api = getpass.getpass()
 api = "3427f6e6a362d849da3380b2d8a17890"
 # Seattle location
 lat = 47.606209
@@ -17,7 +17,6 @@ lng = -122.332069
 
 
 def get_input(days):
-    days = 1
     attributes = ["temperature", "humidity", "pressure", "windBearing", "windSpeed"]
     times = []
     data = {}
@@ -38,7 +37,7 @@ def get_input(days):
     df.index.names = ['datetime']
     df = df.reset_index()
     future = current + datetime.timedelta(days)
-    #len = df.shape[0]
+    # len = df.shape[0]
     df["date"] = [d.date() for d in df["datetime"]]
     df = df[df['date'] == future.date()]
 
@@ -83,13 +82,13 @@ def get_input(days):
         if df.iloc[i]['datetime'].month in [10, 11]:
             season.append('Fall')
     df = df.assign(season=season)
-    #result['season'] = result['season'].astype('category')
+    # result['season'] = result['season'].astype('category')
     # make Week_Status,Hour and Day_of_Week as categorical data
     df = df.assign(Work_Status=weekStatus)
 
     df = df.assign(Day_of_Week=day_week)
-    #df['Day_of_Week'] = df['Day_of_Week'].astype('category')
-    #df['Day_of_Week'].cat.set_categories = ["Mon", "Tue", "Wed", "Thu", "Fri","Sat","Sun"]
+    # df['Day_of_Week'] = df['Day_of_Week'].astype('category')
+    # df['Day_of_Week'].cat.set_categories = ["Mon", "Tue", "Wed", "Thu", "Fri","Sat","Sun"]
     df = df.assign(Hour=hour)
     df['Hour'] = df['Hour'].astype('category')
     # return the ideal dataframe
@@ -103,7 +102,7 @@ def get_input(days):
     result['work_status'] = df['Work_Status']
     result['day_of_week'] = df['Day_of_Week']
     result['season'] = df['season']
-    #result = pd.get_dummies(result)
+    # result = pd.get_dummies(result)
     return result
 
 # get_input(2)
@@ -130,38 +129,57 @@ def feature_engineering(df_in):
 
 def east_prediction(df_x):
     filename = 'gaoshunan_east_model.sav'
-    east_model = pickle.load(open(filename, 'rb'))
-    east_model = pickle.load(open(filename, 'rb'))
+    east_model = cloudpickle.load(open(filename, 'rb'))
     result = east_model.predict(df_x)
-    hour = np.arange(0, 24, 1)
-    plt.plot(hour, result)
-    plt.xlabel('Time (h)')
-    plt.ylabel('East side bike flow')
-    plt.title('East Prediction')
-    plt.grid(True)
-    plt.savefig("static/p-east.png")
+    return result
+    #hour = np.arange(0, 24, 1)
+    #east_plot = sns.lineplot(hour, result)
+    #east_plot.set(xlabel='Time(h)', ylabel='East side bike flow')
+    #east_plot.set_title('East Prediction')
+    # plt.clf()
+    #plt.plot(hour, result)
+    #plt.xlabel('Time (h)')
+    #plt.ylabel('East side bike flow')
+    #plt.title('East Prediction')
+    # plt.grid(True)
+    # plt.savefig("static/p-east.png")
     # plt.show()
 
 
 def west_prediction(df_x):
     filename = 'gaoshunan_west_model.sav'
-    west_model = pickle.load(open(filename, 'rb'))
+    west_model = cloudpickle.load(open(filename, 'rb'))
     result = west_model.predict(df_x)
-    hour = np.arange(0, 24, 1)
-    plt.plot(hour, result)
-    plt.xlabel('Time (h)')
-    plt.ylabel('West side bike flow')
-    plt.title('West Prediction')
-    plt.grid(True)
-    plt.savefig("static/p-west.png")
+    return result
+    #hour = np.arange(0, 24, 1)
+    #west_plot = sns.lineplot(hour, result)
+    #west_plot.set(xlabel='Time(h)', ylabel='West side bike flow')
+    #west_plot.set_title('West Prediction')
+    # plt.clf()
+    #plt.plot(hour, result)
+    #plt.xlabel('Time (h)')
+    #plt.ylabel('West side bike flow')
+    #plt.title('West Prediction')
+    # plt.grid(True)
+    # plt.savefig("static/p-west.png")
     # plt.show()
 
 
 def getPrediction(day):
     df_input = get_input(day)
     df_X = feature_engineering(df_input)
-    east_prediction(df_X)
-    west_prediction(df_X)
+    hour = np.arange(0, 24, 1)
+    temp = df_input['temperature']
+    plt.clf()
+    plt.plot(hour, temp)
+    plt.xlabel('Time (h)')
+    plt.ylabel('West side bike flow')
+    plt.title('West Prediction')
+    plt.grid(True)
+
+    plt.savefig("static/p-west.png")
+    # east_prediction(df_X)
+    # west_prediction(df_X)
 
 
 '''
